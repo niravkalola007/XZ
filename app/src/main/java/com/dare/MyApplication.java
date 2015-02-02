@@ -15,13 +15,13 @@ public class MyApplication extends Application{
     public void onCreate() {
         super.onCreate();
         Parse.initialize(this, "SCNdLrP6aE04W0hq2bibq6txLYqvqGuS2ZrZIHeq", "p4It0D5qbioPvK5X83snfpvOiFOAlkPmA3UE319V");
-//        ParseUser.enableAutomaticUser();
-//        ParseACL defaultACL = new ParseACL();
-//
-//        // If you would like all objects to be private by default, remove this
-//        // line.
-//        defaultACL.setPublicReadAccess(true);
-//
-//        ParseACL.setDefaultACL(defaultACL, true);
+        ParseUser.enableAutomaticUser();
+        ParseACL defaultACL = new ParseACL();
+
+        // If you would like all objects to be private by default, remove this
+        // line.
+        defaultACL.setPublicReadAccess(true);
+
+        ParseACL.setDefaultACL(defaultACL, true);
     }
 }

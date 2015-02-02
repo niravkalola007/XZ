@@ -5,8 +5,13 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
@@ -26,7 +31,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dare.R;
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.model.GraphUser;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 public class DrawerActivity extends ActionBarActivity {
     private DrawerLayout drawerLayout;
@@ -199,4 +214,6 @@ public class DrawerActivity extends ActionBarActivity {
             Toast.makeText(this, " unable to find market app ", Toast.LENGTH_LONG).show();
         }
     }
+
+
 }
