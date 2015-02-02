@@ -1,6 +1,8 @@
 package com.dare;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
@@ -19,7 +21,11 @@ import com.dare.custom_components.CircularImageView;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.model.GraphUser;
+import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.io.BufferedInputStream;
@@ -28,13 +34,19 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 public class FragmentHome extends Fragment implements View.OnClickListener{
 
     private TextView profileName,txtTitle,txtQuest,txtAccept,txtDecline;
     private Typeface bold,semibold,regular;
-private CircularImageView circularImageView;
-private ParseUser parseUser;
+    private CircularImageView circularImageView;
+    private ParseUser parseUser;
+    int randomInt;
     public static FragmentHome newInstance() {
         FragmentHome fragment = new FragmentHome();
 
@@ -46,7 +58,7 @@ private ParseUser parseUser;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View convertView= inflater.inflate(R.layout.fragment_home, container, false);
         initView(convertView);
@@ -55,7 +67,72 @@ private ParseUser parseUser;
         makeMeRequest();
 
 
+
+        ParseQuery<ParseObject> queryDate = ParseQuery.getQuery("currentdate");
+        queryDate.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> scoreList, ParseException e) {
+                if (e == null) {
+                    DateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
+                    Random random = new Random();
+                    int randomIntValue = random.nextInt(50);
+                    scoreList.get(0).put("date","nirav"+randomIntValue);
+                    scoreList.get(0).saveInBackground();
+                    Date serverDate=scoreList.get(0).getUpdatedAt();
+                    String serverDateString =inputFormat.format(serverDate);
+                    Date currentDate=new Date();
+                    String currentDateString =inputFormat.format(currentDate);
+                    Log.e("serverDate",serverDateString+"");
+                    Log.e("currentDate",currentDateString+"");
+                    if(serverDateString.equals(currentDateString)){
+
+
+
+                        ParseQuery<ParseObject> query = ParseQuery.getQuery("Quests");
+
+                        query.findInBackground(new FindCallback<ParseObject>() {
+                            public void done(List<ParseObject> scoreList, ParseException e) {
+                                if (e == null) {
+                                    getRandomNumber(scoreList);
+
+                                } else {
+
+                                }
+                            }
+                        });
+                    } else {
+                        txtQuest.setText("wrong date");
+                    }
+
+                } else {
+                    Log.d("score", "Error: " + e.getMessage());
+                }
+            }
+        });
         return convertView;
+    }
+
+
+    private void getRandomNumber(List<ParseObject> scoreList){
+        SharedPreferences sharedpreferences = getActivity().getSharedPreferences("Random", Context.MODE_PRIVATE);
+        int previousRandom=sharedpreferences.getInt("previous_random",0);
+
+        randomInt=generateRandom(scoreList);
+
+        if(previousRandom==randomInt){
+            getRandomNumber(scoreList);
+        } else{
+            SharedPreferences.Editor editor=sharedpreferences.edit();
+            editor.putInt("previous_random",randomInt);
+            editor.commit();
+            txtQuest.setText(scoreList.get(randomInt).get("Quest").toString());
+        }
+    }
+
+    private int generateRandom(List<ParseObject> scoreList) {
+
+        Random random = new Random();
+        int randomInt = random.nextInt(scoreList.size());
+        return randomInt;
     }
 
 
