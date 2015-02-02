@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +20,12 @@ import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.model.GraphUser;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseUser;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -31,6 +34,7 @@ public class FragmentHome extends Fragment implements View.OnClickListener{
     private TextView profileName,txtTitle,txtQuest,txtAccept,txtDecline;
     private Typeface bold,semibold,regular;
 private CircularImageView circularImageView;
+private ParseUser parseUser;
     public static FragmentHome newInstance() {
         FragmentHome fragment = new FragmentHome();
 
@@ -48,7 +52,9 @@ private CircularImageView circularImageView;
         initView(convertView);
         initFonts();
         setFonts();
-//        makeMeRequest();
+        makeMeRequest();
+
+
         return convertView;
     }
 
@@ -94,18 +100,30 @@ private CircularImageView circularImageView;
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        parseUser = ParseUser.getCurrentUser();
+
+    }
+
     private void makeMeRequest() {
+        ParseFacebookUtils.initialize(getResources().getString(R.string.app_id));
         Request request = Request.newMeRequest(ParseFacebookUtils.getSession(),
                 new Request.GraphUserCallback() {
                     @Override
                     public void onCompleted(final GraphUser user, Response response) {
                         if (user != null)
                         {
+                            ParseUser.getCurrentUser().put("fbName", user.getName());
+                            ParseUser.getCurrentUser().saveInBackground();
+                            profileName.setText("HELLO "+user.getName().toUpperCase());
                             AsyncTask<Void, Void, Bitmap> t = new AsyncTask<Void, Void, Bitmap>(){
                                 protected Bitmap doInBackground(Void... p) {
                                     Bitmap bm = null;
                                     try {
-                                        URL aURL = new URL("http://graph.facebook.com/"+user.getId()+"/picture?type=large");
+                                        Log.e("facebook profile picture","http://graph.facebook.com/"+user.getId()+"/picture?type=large");
+                                        URL aURL = new URL("https://graph.facebook.com/"+user.getId()+"/picture?type=large");
                                         URLConnection conn = aURL.openConnection();
                                         conn.setUseCaches(true);
                                         conn.connect();
@@ -122,10 +140,7 @@ private CircularImageView circularImageView;
 
                                 protected void onPostExecute(Bitmap bm){
 
-
-
                                     circularImageView.setImageBitmap(bm);
-
                                 }
                             };
                             t.execute();

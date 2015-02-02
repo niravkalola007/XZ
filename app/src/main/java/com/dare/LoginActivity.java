@@ -96,6 +96,7 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
                         if (user == null) {
                             dialog.dismiss();
                         } else if (user.isNew()) {
+
                             dialog.dismiss();
                             Intent intent = new Intent(LoginActivity.this, DrawerActivity.class);
                             startActivity(intent);

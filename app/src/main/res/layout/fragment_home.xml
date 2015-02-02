@@ -32,7 +32,7 @@
         app:border_color="@color/gray"
         app:border_width="5dp"
         app:shadow="false"
-        android:scaleType="centerCrop"
+        android:scaleType="centerInside"
         android:src="@drawable/profile_placeholder"
         />
 
@@ -43,12 +43,11 @@
             android:textColor="@color/gray"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/profile_name"
+            android:text=""
             android:textSize="@dimen/small_text"/>
 
         <TextView
             android:layout_marginTop="@dimen/activity_margin"
-
             android:id="@+id/txtTitle"
             android:gravity="center"
             android:textStyle="bold"
