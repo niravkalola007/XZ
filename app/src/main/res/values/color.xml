@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primaryColor">#28a3de</color>
+    <color name="primaryColorDark">#0290D4</color>
+    <color name="accent">#fd4b4b</color>
+    <color name="accentDark">#ED3232</color>
+    <color name="button_1">#333333</color>
+    <color name="button_1_selected">#2E2E2E</color>
+    <color name="button_2">#3b5999</color>
+    <color name="button_2_selected">#30529C</color>
+    <color name="gray">#494949</color>
+    <color name="activity_bg">#cccccc</color>
+</resources>

@@ -1,0 +1,33 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/share_and_decline"
+    tools:context="com.dare.DeclineActivity">
+
+    <LinearLayout
+        android:layout_margin="@dimen/activity_margin"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+
+
+            android:id="@+id/txtDeclineMessage"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/decline_text"
+            android:textSize="@dimen/large_text"/>
+        <ImageView
+            android:id="@+id/imgBackDecline"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_back_round_icon"/>
+        </LinearLayout>
+</RelativeLayout>

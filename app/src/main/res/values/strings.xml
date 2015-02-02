@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Dare</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="app_subtitle">HAVE FUN AND MAKE PEOPLE TO FEEL GOOD</string>
+    <string name="app_description">Accept our Daily Quest and have fun doing new things.\nThis is an opportunity to enjoy in our club full of crazy people. Good luck!</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="profile_name">HELLO XYZ</string>
+    <string name="default_quest">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s</string>
+    <!-- <string name="default_quest">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which dont look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isnt anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.</string> -->
+    <string name="title_activity_drawer">DrawerActivity</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+    drawer_open            <string name="title_activity_share_on_fb">ShareOnFbActivity</string>
+    <string name="title_activity_decline">DeclineActivity</string>
+    <string name="decline_text">We waiting you tomorrow to do new things</string>
+    <string name="title_activity_upload_video">UploadVideoActivity</string>
+    <string name="app_id">908705875806875</string>
+</resources>
