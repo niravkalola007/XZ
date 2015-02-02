@@ -66,8 +66,6 @@ public class FragmentHome extends Fragment implements View.OnClickListener{
         setFonts();
         makeMeRequest();
 
-
-
         ParseQuery<ParseObject> queryDate = ParseQuery.getQuery("currentdate");
         queryDate.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> scoreList, ParseException e) {
@@ -85,15 +83,11 @@ public class FragmentHome extends Fragment implements View.OnClickListener{
                     Log.e("currentDate",currentDateString+"");
                     if(serverDateString.equals(currentDateString)){
 
-
-
                         ParseQuery<ParseObject> query = ParseQuery.getQuery("Quests");
-
                         query.findInBackground(new FindCallback<ParseObject>() {
                             public void done(List<ParseObject> scoreList, ParseException e) {
                                 if (e == null) {
                                     getRandomNumber(scoreList);
-
                                 } else {
 
                                 }
