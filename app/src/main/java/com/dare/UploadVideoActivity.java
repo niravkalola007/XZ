@@ -23,6 +23,7 @@ import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.Facebook;
+import com.parse.ParseFacebookUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -51,7 +52,8 @@ public class UploadVideoActivity extends ActionBarActivity {
         fbButtonLayoutUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadVideo();
+//                uploadVideo();
+                postVideo();
 //                File file=new File(Environment.getExternalStorageDirectory()+"/DCIM/100MEDIA/VIDEO0001.mp4");
             }
         });
@@ -84,60 +86,6 @@ public class UploadVideoActivity extends ActionBarActivity {
     }
 
 
-    private void uploadVideo(){
-        progressDialog=new ProgressDialog(UploadVideoActivity.this);
-        progressDialog.setMessage("Loading");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-
-        Session session=Session.getActiveSession();
-        File file=new File(Environment.getExternalStorageDirectory()+"/DCIM/100MEDIA/VIDEO0001.mp4");
-        try {
-            Request audioRequest = Request.newUploadVideoRequest(session, file, new Request.Callback() {
-
-                @Override
-                public void onCompleted(Response response) {
-                    // TODO Auto-generated method stub
-
-                    if(response.getError()==null)
-                    {
-                        progressDialog.dismiss();
-                        Toast.makeText(UploadVideoActivity.this, "Video Shared Successfully", Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
-                        progressDialog.dismiss();
-                        Toast.makeText(UploadVideoActivity.this, response.getError().getErrorMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-            audioRequest.executeAsync();
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        }
-
-
-    }
-
-
-    public byte[] readBytes(InputStream inputStream) throws IOException {
-        // This dynamically extends to take the bytes you read.
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-
-        // This is storage overwritten on each iteration with bytes.
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
-
-        // We need to know how may bytes were read to write them to the byteBuffer.
-        int len = 0;
-        while ((len = inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
-        }
-
-        // And then we can return your byte array.
-        return byteBuffer.toByteArray();
-    }
 
 
     @Override
@@ -163,5 +111,43 @@ public class UploadVideoActivity extends ActionBarActivity {
                 break;
         }
         return super.onContextItemSelected(item);
+    }
+
+    public void postVideo() {
+        progressDialog=new ProgressDialog(UploadVideoActivity.this);
+        progressDialog.setMessage("Loading");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        ParseFacebookUtils.initialize(getResources().getString(R.string.app_id));
+        File file=new File(Environment.getExternalStorageDirectory()+"/Download/testing.mp4");
+//        File file=new File(Environment.getExternalStorageDirectory()+"/downloads/testing.mp4");
+        Session session = ParseFacebookUtils.getSession();
+
+        try {
+            Request videoRequest = Request.newUploadVideoRequest(session, file, new Request.Callback() {
+
+                @Override
+                public void onCompleted(Response response) {
+                    // TODO Auto-generated method stub
+
+                    if(response.getError()==null)
+                    {
+                        progressDialog.dismiss();
+                        Log.e("response",response.getError().getErrorMessage()+"");
+                        Toast.makeText(UploadVideoActivity.this, "Video Shared Successfully", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+
+                        progressDialog.dismiss();
+                        Log.e("response",response.getError().getErrorMessage()+"");
+                        Toast.makeText(UploadVideoActivity.this, response.getError().getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            videoRequest.executeAsync();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

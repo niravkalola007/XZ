@@ -19,6 +19,8 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
+import java.util.Arrays;
+
 
 public class LoginActivity extends ActionBarActivity implements View.OnClickListener{
     private ProgressDialog dialog;
@@ -90,13 +92,13 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
                 dialog.setMessage("Loading");
                 dialog.setCancelable(false);
                 dialog.show();
-                ParseFacebookUtils.logIn(this, new LogInCallback() {
+                ParseFacebookUtils.logIn(Arrays.asList(ParseFacebookUtils.Permissions.User.EMAIL, ParseFacebookUtils.Permissions.Friends.ABOUT_ME, ParseFacebookUtils.Permissions.User.PHOTOS,
+                        ParseFacebookUtils.Permissions.User.VIDEOS),this, new LogInCallback() {
                     @Override
                     public void done(ParseUser user, ParseException err) {
                         if (user == null) {
                             dialog.dismiss();
                         } else if (user.isNew()) {
-
                             dialog.dismiss();
                             Intent intent = new Intent(LoginActivity.this, DrawerActivity.class);
                             startActivity(intent);
