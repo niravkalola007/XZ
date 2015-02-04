@@ -92,8 +92,7 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
                 dialog.setMessage("Loading");
                 dialog.setCancelable(false);
                 dialog.show();
-                ParseFacebookUtils.logIn(Arrays.asList(ParseFacebookUtils.Permissions.User.EMAIL, ParseFacebookUtils.Permissions.Friends.ABOUT_ME, ParseFacebookUtils.Permissions.User.PHOTOS,
-                        ParseFacebookUtils.Permissions.User.VIDEOS),this, new LogInCallback() {
+                ParseFacebookUtils.logIn(this, new LogInCallback() {
                     @Override
                     public void done(ParseUser user, ParseException err) {
                         if (user == null) {

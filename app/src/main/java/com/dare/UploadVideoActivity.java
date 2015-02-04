@@ -3,6 +3,7 @@ package com.dare;
 import android.app.ProgressDialog;
 import android.graphics.Typeface;
 import android.os.Environment;
+import android.provider.SyncStateContract;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -18,12 +19,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dare.R;
+import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.Facebook;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseUser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -31,9 +34,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 
 public class UploadVideoActivity extends ActionBarActivity {
-
+    private static final List<String> PERMISSIONS = Arrays.asList("manage_pages");
     private Toolbar toolbar;
     private LinearLayout fbButtonLayoutUpload;
     private ImageView imgVideothumbnail;
@@ -48,12 +53,35 @@ public class UploadVideoActivity extends ActionBarActivity {
         videoDescription=(EditText) findViewById(R.id.videoDescription);
         videoDescription.setTypeface(Typeface.createFromAsset(getAssets(), "regular.ttf"));
         imgVideothumbnail=(ImageView) findViewById(R.id.imgVideothumbnail);
+
+
         fbButtonLayoutUpload= (LinearLayout) findViewById(R.id.fbButtonLayoutUpload);
         fbButtonLayoutUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                uploadVideo();
-                postVideo();
+//                postVideo();
+                ParseFacebookUtils.initialize(getResources().getString(R.string.app_id));
+                Session session = ParseFacebookUtils.getSession();
+                Session.NewPermissionsRequest newPermissionsRequest = new Session
+                        .NewPermissionsRequest(UploadVideoActivity.this, Arrays.asList("publish_actions", "publish_stream"));
+                session.requestNewPublishPermissions(newPermissionsRequest);
+
+                Bundle params = new Bundle();
+                params.putString("url", "https://camo.githubusercontent.com/2e5c9d7b6239afb43ade3e52e5156e33bf63dbc5/687474703a2f2f6934362e74696e797069632e636f6d2f32316b797769742e706e67");
+/* make the API call */
+                new Request(
+                        session,
+                        "/145634995501895/photos",
+                        params,
+                        HttpMethod.POST,
+                        new Request.Callback() {
+                            public void onCompleted(Response response) {
+            /* handle the result */
+                                Log.e("response",response+"");
+                            }
+                        }
+                ).executeAsync();
 //                File file=new File(Environment.getExternalStorageDirectory()+"/DCIM/100MEDIA/VIDEO0001.mp4");
             }
         });
