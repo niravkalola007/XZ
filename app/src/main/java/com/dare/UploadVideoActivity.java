@@ -1,8 +1,14 @@
 package com.dare;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.provider.SyncStateContract;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -39,6 +45,8 @@ import java.util.List;
 
 public class UploadVideoActivity extends ActionBarActivity {
     private static final List<String> PERMISSIONS = Arrays.asList("manage_pages");
+    static final int REQUEST_VIDEO_CAPTURE = 1;
+    static final int REQUEST_VIDEO_FROM_GALLERY = 2;
     private Toolbar toolbar;
     private LinearLayout fbButtonLayoutUpload;
     private ImageView imgVideothumbnail;
@@ -129,10 +137,17 @@ public class UploadVideoActivity extends ActionBarActivity {
 
         switch (item.getItemId()){
             case 1:
-
+                Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
+                }
                 break;
             case 2:
+                Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                intent.setType("video/*");
+                // intent.setAction(Intent.ACTION_GET_CONTENT);
 
+                startActivityForResult(Intent.createChooser(intent,"Complete action using"), 2);
                 break;
             case 3:
 
@@ -178,4 +193,52 @@ public class UploadVideoActivity extends ActionBarActivity {
             e.printStackTrace();
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != RESULT_OK)
+            return;
+
+        switch (requestCode) {
+            case REQUEST_VIDEO_CAPTURE:
+                Uri selectedImageUri = data.getData();
+
+                String selectedVideoPath = getPath(selectedImageUri);
+                System.out.println("Video Path : " + selectedVideoPath);
+                Bitmap bmThumbnail;
+
+                // MICRO_KIND: 96 x 96 thumbnail
+                bmThumbnail = ThumbnailUtils.createVideoThumbnail(
+                        selectedVideoPath, MediaStore.Video.Thumbnails.MICRO_KIND);
+                imgVideothumbnail.setImageBitmap(bmThumbnail);
+                break;
+
+            case REQUEST_VIDEO_FROM_GALLERY:
+                Uri selectedImageUriGallery = data.getData();
+
+                String selectedVideoPathNew = getPath(selectedImageUriGallery);
+                System.out.println("Video Path : " + selectedVideoPathNew);
+                Bitmap bmThumbnailNew;
+
+                // MICRO_KIND: 96 x 96 thumbnail
+                bmThumbnailNew = ThumbnailUtils.createVideoThumbnail(
+                        selectedVideoPathNew, MediaStore.Video.Thumbnails.MICRO_KIND);
+                imgVideothumbnail.setImageBitmap(bmThumbnailNew);
+                break;
+        }
+
+    }
+
+    public String getPath(Uri contentUri) {
+        String res = null;
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
+        if(cursor.moveToFirst()){;
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            res = cursor.getString(column_index);
+        }
+        cursor.close();
+        return res;
+    }
+
 }
