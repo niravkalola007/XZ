@@ -1,5 +1,6 @@
 package com.dare;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
@@ -29,6 +30,7 @@ import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
+import com.facebook.SessionState;
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.Facebook;
 import com.parse.ParseFacebookUtils;
@@ -44,7 +46,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class UploadVideoActivity extends ActionBarActivity {
-    private static final List<String> PERMISSIONS = Arrays.asList("manage_pages");
+
     static final int REQUEST_VIDEO_CAPTURE = 1;
     static final int REQUEST_VIDEO_FROM_GALLERY = 2;
     private Toolbar toolbar;
@@ -54,6 +56,10 @@ public class UploadVideoActivity extends ActionBarActivity {
     private EditText videoDescription;
     private LinearLayout videothumbnailLayout;
     private ProgressDialog progressDialog;
+    private Uri selectedImageUri;
+    byte[] inputData;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,30 +73,51 @@ public class UploadVideoActivity extends ActionBarActivity {
         fbButtonLayoutUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                uploadVideo();
-//                postVideo();
-                ParseFacebookUtils.initialize(getResources().getString(R.string.app_id));
-                Session session = ParseFacebookUtils.getSession();
-                Session.NewPermissionsRequest newPermissionsRequest = new Session
-                        .NewPermissionsRequest(UploadVideoActivity.this, Arrays.asList("publish_actions", "publish_stream"));
-                session.requestNewPublishPermissions(newPermissionsRequest);
+                progressDialog=new ProgressDialog(UploadVideoActivity.this);
+                progressDialog.setMessage("Loading");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+                try {
+                    InputStream iStream = getContentResolver().openInputStream(selectedImageUri);
+                    inputData = getBytes(iStream);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+//                ParseFacebookUtils.getSession().requestNewPublishPermissions(new Session.NewPermissionsRequest(UploadVideoActivity.this,
+//                        Arrays.asList(ParseFacebookUtils.Permissions.Extended.PUBLISH_ACTIONS, ParseFacebookUtils.Permissions.Extended.PUBLISH_STREAM))
+//                        .setCallback(new Session.StatusCallback() {
+//                            @Override
+//                            public void call(Session session, SessionState state, Exception exception) {
+//                                if (!arePublishPermissionsEnabled(session)) {
+//                                    inflow.setChecked(false);
+//                                    facebook.setChecked(false);
+//                                    twitter.setChecked(false);
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void call(Session session, SessionState sessionState, Exception e) {
+//
+//                            }
+//                        }));
 
                 Bundle params = new Bundle();
-                params.putString("url", "https://camo.githubusercontent.com/2e5c9d7b6239afb43ade3e52e5156e33bf63dbc5/687474703a2f2f6934362e74696e797069632e636f6d2f32316b797769742e706e67");
-/* make the API call */
+                params.putByteArray("source", inputData);
+
+
                 new Request(
-                        session,
-                        "/145634995501895/photos",
+                        ParseFacebookUtils.getSession(),
+                        "/145634995501895/videos",
                         params,
                         HttpMethod.POST,
                         new Request.Callback() {
                             public void onCompleted(Response response) {
-            /* handle the result */
-                                Log.e("response",response+"");
+                                progressDialog.dismiss();
+                                Toast.makeText(UploadVideoActivity.this,"Response: "+response,Toast.LENGTH_SHORT).show();
                             }
                         }
                 ).executeAsync();
-//                File file=new File(Environment.getExternalStorageDirectory()+"/DCIM/100MEDIA/VIDEO0001.mp4");
             }
         });
         txtFacebookUpload=(TextView) findViewById(R.id.txtFacebookUpload);
@@ -121,8 +148,31 @@ public class UploadVideoActivity extends ActionBarActivity {
 
     }
 
+//    private void requestPublishPermissions(Session session) {
+//        List<String> PERMISSIONS = Arrays.asList("publish_actions", "publish_stream");
+//        if (session != null) {
+//            pendingAnnounce = true;
+//            Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(this, PERMISSIONS);
+//
+//            newPermissionsRequest.setRequestCode(REAUTH_ACTIVITY_CODE);
+//            Session mSession = Session.openActiveSessionFromCache(this);
+//            mSession.addCallback(callback);
+//            mSession.requestNewPublishPermissions(newPermissionsRequest);
+//        }
+//    }
 
 
+    public byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
+    }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -156,43 +206,7 @@ public class UploadVideoActivity extends ActionBarActivity {
         return super.onContextItemSelected(item);
     }
 
-    public void postVideo() {
-        progressDialog=new ProgressDialog(UploadVideoActivity.this);
-        progressDialog.setMessage("Loading");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-        ParseFacebookUtils.initialize(getResources().getString(R.string.app_id));
-        File file=new File(Environment.getExternalStorageDirectory()+"/Download/testing.mp4");
-//        File file=new File(Environment.getExternalStorageDirectory()+"/downloads/testing.mp4");
-        Session session = ParseFacebookUtils.getSession();
 
-        try {
-            Request videoRequest = Request.newUploadVideoRequest(session, file, new Request.Callback() {
-
-                @Override
-                public void onCompleted(Response response) {
-                    // TODO Auto-generated method stub
-
-                    if(response.getError()==null)
-                    {
-                        progressDialog.dismiss();
-                        Log.e("response",response.getError().getErrorMessage()+"");
-                        Toast.makeText(UploadVideoActivity.this, "Video Shared Successfully", Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
-
-                        progressDialog.dismiss();
-                        Log.e("response",response.getError().getErrorMessage()+"");
-                        Toast.makeText(UploadVideoActivity.this, response.getError().getErrorMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-            videoRequest.executeAsync();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -201,7 +215,7 @@ public class UploadVideoActivity extends ActionBarActivity {
 
         switch (requestCode) {
             case REQUEST_VIDEO_CAPTURE:
-                Uri selectedImageUri = data.getData();
+                selectedImageUri = data.getData();
 
                 String selectedVideoPath = getPath(selectedImageUri);
                 System.out.println("Video Path : " + selectedVideoPath);
@@ -214,9 +228,9 @@ public class UploadVideoActivity extends ActionBarActivity {
                 break;
 
             case REQUEST_VIDEO_FROM_GALLERY:
-                Uri selectedImageUriGallery = data.getData();
+                selectedImageUri = data.getData();
 
-                String selectedVideoPathNew = getPath(selectedImageUriGallery);
+                String selectedVideoPathNew = getPath(selectedImageUri);
                 System.out.println("Video Path : " + selectedVideoPathNew);
                 Bitmap bmThumbnailNew;
 
@@ -233,7 +247,7 @@ public class UploadVideoActivity extends ActionBarActivity {
         String res = null;
         String[] proj = { MediaStore.Images.Media.DATA };
         Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
-        if(cursor.moveToFirst()){;
+        if(cursor.moveToFirst()){
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             res = cursor.getString(column_index);
         }

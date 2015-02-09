@@ -20,10 +20,12 @@ import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
 import java.util.Arrays;
+import java.util.List;
 
 
 public class LoginActivity extends ActionBarActivity implements View.OnClickListener{
     private ProgressDialog dialog;
+    private static final List<String> PERMISSIONS = Arrays.asList("publish_actions","public_profile","email");
     private TextView appTitle,appSubTitle,appDescription,txtPlayStore,txtFacebook;
     private Typeface bold,semibold,regular;
     private LinearLayout fbButtonLayout,storeButtonLayout;
@@ -92,7 +94,7 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
                 dialog.setMessage("Loading");
                 dialog.setCancelable(false);
                 dialog.show();
-                ParseFacebookUtils.logIn(this, new LogInCallback() {
+                ParseFacebookUtils.logIn(PERMISSIONS,this, new LogInCallback() {
                     @Override
                     public void done(ParseUser user, ParseException err) {
                         if (user == null) {
