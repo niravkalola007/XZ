@@ -19,6 +19,7 @@
     <string name="decline_text">We waiting you tomorrow to do new things</string>
     <string name="title_activity_upload_video">UploadVideoActivity</string>
     <!--<string name="app_id">908705875806875</string>-->
-    <string name="app_id">532383143569383</string>
+    <!--<string name="app_id">532383143569383</string>-->
+    <string name="app_id">253065188228661</string>
 
 </resources>

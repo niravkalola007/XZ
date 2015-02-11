@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.SyncStateContract;
@@ -58,7 +59,7 @@ public class UploadVideoActivity extends ActionBarActivity {
     private ProgressDialog progressDialog;
     private Uri selectedImageUri;
     byte[] inputData;
-
+    private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,10 +74,7 @@ public class UploadVideoActivity extends ActionBarActivity {
         fbButtonLayoutUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressDialog=new ProgressDialog(UploadVideoActivity.this);
-                progressDialog.setMessage("Loading");
-                progressDialog.setCancelable(false);
-                progressDialog.show();
+
                 try {
                     InputStream iStream = getContentResolver().openInputStream(selectedImageUri);
                     inputData = getBytes(iStream);
@@ -84,40 +82,49 @@ public class UploadVideoActivity extends ActionBarActivity {
                     e.printStackTrace();
                 }
 
-//                ParseFacebookUtils.getSession().requestNewPublishPermissions(new Session.NewPermissionsRequest(UploadVideoActivity.this,
-//                        Arrays.asList(ParseFacebookUtils.Permissions.Extended.PUBLISH_ACTIONS, ParseFacebookUtils.Permissions.Extended.PUBLISH_STREAM))
-//                        .setCallback(new Session.StatusCallback() {
-//                            @Override
-//                            public void call(Session session, SessionState state, Exception exception) {
-//                                if (!arePublishPermissionsEnabled(session)) {
-//                                    inflow.setChecked(false);
-//                                    facebook.setChecked(false);
-//                                    twitter.setChecked(false);
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void call(Session session, SessionState sessionState, Exception e) {
-//
-//                            }
-//                        }));
+                ParseFacebookUtils.getSession().requestNewPublishPermissions(new Session.NewPermissionsRequest(UploadVideoActivity.this,
+                     Arrays.asList(ParseFacebookUtils.Permissions.Extended.PUBLISH_ACTIONS)));
 
+                progressDialog=new ProgressDialog(UploadVideoActivity.this);
+                progressDialog.setMessage("Loading");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
                 Bundle params = new Bundle();
                 params.putByteArray("source", inputData);
-
-
                 new Request(
                         ParseFacebookUtils.getSession(),
-                        "/145634995501895/videos",
+                        "1559395644274660/videos",
                         params,
                         HttpMethod.POST,
                         new Request.Callback() {
                             public void onCompleted(Response response) {
+                                Log.e("response",response+"");
                                 progressDialog.dismiss();
-                                Toast.makeText(UploadVideoActivity.this,"Response: "+response,Toast.LENGTH_SHORT).show();
                             }
                         }
                 ).executeAsync();
+//                uploadVideoSample();
+
+
+
+
+
+//                Bundle params = new Bundle();
+//                params.putByteArray("source", inputData);
+
+
+//                new Request(
+//                        ParseFacebookUtils.getSession(),
+//                        "/145634995501895/videos",
+//                        params,
+//                        HttpMethod.POST,
+//                        new Request.Callback() {
+//                            public void onCompleted(Response response) {
+//                                progressDialog.dismiss();
+//                                Toast.makeText(UploadVideoActivity.this,"Response: "+response,Toast.LENGTH_SHORT).show();
+//                            }
+//                        }
+//                ).executeAsync();
             }
         });
         txtFacebookUpload=(TextView) findViewById(R.id.txtFacebookUpload);
@@ -146,6 +153,47 @@ public class UploadVideoActivity extends ActionBarActivity {
             });
         }
 
+    }
+
+    private void uploadVideoSample() {
+
+        new AsyncTask<Void,Void,Void>(){
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                progressDialog=new ProgressDialog(UploadVideoActivity.this);
+                progressDialog.setMessage("Loading");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+            }
+
+            @Override
+            protected Void doInBackground(Void... paramss) {
+
+
+
+//                Bundle params = new Bundle();
+//                params.putString("other", "http://samples.ogp.me/467235199955838");
+//
+//                Request request = new Request(
+//                        Session.getActiveSession(),
+//                        "me/niravkalola:video_sharing",
+//                        params,
+//                        HttpMethod.POST
+//                );
+//                progressDialog.dismiss();
+//                Response response = request.executeAndWait();
+//                Log.e("response",response+"");
+//                Toast.makeText(UploadVideoActivity.this,"Response: "+response,Toast.LENGTH_SHORT).show();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                progressDialog.dismiss();
+            }
+        }.execute();
     }
 
 //    private void requestPublishPermissions(Session session) {
